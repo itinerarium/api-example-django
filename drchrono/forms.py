@@ -1,3 +1,6 @@
 from django import forms
 
-# forms go here
+class OptOutForm(forms.Form):
+    patientRef = forms.IntegerField()
+    action = forms.CharField()
+    

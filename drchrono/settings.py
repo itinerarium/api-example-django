@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-import os
+import os, logging
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -109,3 +109,29 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+SOCIAL_AUTH_DRCHRONO_KEY = os.environ['SOCIAL_AUTH_DRCHRONO_KEY']
+SOCIAL_AUTH_DRCHRONO_SECRET = os.environ['SOCIAL_AUTH_DRCHRONO_SECRET']
+SOCIAL_AUTH_DRCHRONO_SCOPE = ['patients:read user:read']
+LOGIN_URL = 'http://localhost:8000/login/drchrono/'
+LOGIN_REDIRECT_URL = 'http://localhost:8000'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'

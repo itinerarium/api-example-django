@@ -1,0 +1,92 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+    <title>App | Birthday Reminders Project</title>
+
+    <meta name="description" content="Birthday Reminders Project automates birthday greetings for drchrono practices using the drchrono API." />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 col-md-offset-3">
+        <div>
+          <p class="text-center"><mark><em>Not ready for actual use. Built for drchrono <abbr title="Application Programming Interface">API</abbr> familarization purposes. See project README for TODO items.</em></mark></p>
+        </div>
+
+        <div>
+          <p class="text-right"><a class="btn btn-warning" href="/logout/">Log out</a></p>
+        </div>
+
+        <div>
+          <h1>Birthday Reminders Project</h1>
+        </div>
+
+        <div>
+          <h2>Welcome</h2>
+          <p>Doctor {{ doctor.doctorRef }} (aka {{ user }})</p>
+          {% if doctor.active == 'N' %}
+          <p>Automated birthday greetings have not been enabled. Please review the below message and patient list and contact us to activate the system. Opt out any patient from this system by clicking on the button in the status column.</p>
+          {% elif doctor.active == 'Y' %}
+          <p>Automated birthday greetings will be sent. Patients will receive the following greeting. Opt out any patient from this system by clicking on the button in the status column.</p>
+          {% endif %}
+          <pre>{{ doctor.msg }}</pre>
+        </div>
+
+        <div>
+          <h2>Patient listing</h2>
+            <table class="table">
+              <thead>
+                <th>Status</th>
+                <th>Patient ID</th>
+                <th>Date of Birth</th>
+                <th>Plan</th>
+              </thead>
+            {% for patientObj in patients %}
+              <tr>
+                <td><form method="post" action=""><input type="hidden" name="patientRef" value="{{ patientObj.patientRef }}" />{% csrf_token %}{% if patientObj.active == 'Y' %}<input type="hidden" name="action" value="N" /><input class="btn btn-success" type="submit" value="Opted-in">{% else %}<input type="hidden" name="action" value="Y" /><input class="btn btn-danger" type="submit" value="Opted-out">{% endif %}</form></td>
+                <td>{{ patientObj.patientRef }}</td>
+                <td>{{ patientObj.bday | default:"not on record" }}</td>
+                <td>{% if patientObj.bday and patientObj.active == 'Y' %}{% if patientObj.email or patientObj.mobile %}send to {% if patientObj.email %}{{ patientObj.email }}{% elif patientObj.mobile %}{{  patientObj.mobile }}{% endif %}{% endif %}{% endif %}</td>
+              </tr>
+            {% empty %}
+              <tr class="warning" colspan="4">It appears that the specified doctor has no patients.</tr>
+            {% endfor %}
+            </table>
+        </div>
+
+        <div>
+          <h2>Message log</h2>
+          <table class="table">
+            <thead>
+              <th>Message ID</th>
+              <th>Date</th>
+              <th>Patient ID</th>
+              <th>Medium</th>
+              <th>Message</th>
+            </thead>
+          {% for messageObj in messages %}
+            <tr>
+              <td>{{ messageObj.id }}</td>
+              <td>{{ messageObj.date }}</td>
+              <td>{{ messageObj.patient.patientRef }}</td>
+              <td>{{ messageObj.medium }}</td>
+              <td>{{ messageObj.msg }}</td>
+            </tr>
+          {% empty %}
+          <td class="warning" colspan="5">It appears that no messages have been dispatched.</td>
+          {% endfor %}
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
